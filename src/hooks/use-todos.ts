@@ -1,6 +1,11 @@
 "use client";
-import { useState } from "react";
-import { fetchTodo, createTodo, deleteTodo } from "@/lib/utils/todos";
+
+import {
+  fetchTodo,
+  createTodo,
+  deleteTodo,
+  updateToDoStatus,
+} from "@/lib/utils/todos";
 import { useUser } from "@clerk/nextjs";
 import { SupabaseClient } from "@/lib/supabase/client";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -12,7 +17,7 @@ const UseToDos = () => {
   const { user } = useUser();
   const queryKey = ["tasks", user?.id];
 
-  const { data: todo, isLoading } = useQuery({
+  const { data: todos, isLoading } = useQuery({
     queryKey: queryKey,
     queryFn: () => fetchTodo(supabase, user!.id),
     enabled: !!user,
@@ -28,6 +33,35 @@ const UseToDos = () => {
     },
     onError: (error) => {
       throw new Error("Yükleme hatası", error);
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({
+      projectId,
+      status,
+    }: {
+      projectId: string;
+      status: string;
+    }) => updateToDoStatus(supabase, projectId, status),
+    onMutate: async ({ projectId, status }) => {
+      await queryClient.cancelQueries({ queryKey: queryKey });
+      const oldTodos = queryClient.getQueryData<Tasks[]>(queryKey);
+      queryClient.setQueryData(queryKey, (oldTask: Tasks[] = []) =>
+        oldTask.map((task) =>
+          task.id === projectId ? { ...task, status } : task
+        )
+      );
+      return { oldTodos };
+    },
+    onError: (error, id, context) => {
+      if (context?.oldTodos) {
+        queryClient.setQueryData(queryKey, context.oldTodos);
+      }
+      throw new Error("Güncelleme hatası", error);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: queryKey });
     },
   });
 
@@ -54,10 +88,10 @@ const UseToDos = () => {
   });
 
   return {
-    todo,
+    todos,
     loading: isLoading,
-    getTodo: async () =>
-      await queryClient.invalidateQueries({ queryKey: queryKey }),
+    updateTodo: (projectId: string, status: string) =>
+      updateMutation.mutate({ projectId, status }),
     addTodo: async () => await addMutation.mutateAsync(),
     deletetTodo: async (id: string) => await deleteMutation.mutateAsync(id),
   };

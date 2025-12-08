@@ -34,6 +34,22 @@ export const createTodo = async (
   return data;
 };
 
+export const updateToDoStatus = async (
+  supabase: SupabaseClient,
+  projectId: string,
+  status: string
+) => {
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ status: status })
+    .eq("id", projectId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 export const deleteTodo = async (
   supabase: SupabaseClient,
   projectId: string
