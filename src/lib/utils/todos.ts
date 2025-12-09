@@ -8,7 +8,8 @@ export const fetchTodo = async (
   const { data, error } = await supabase
     .from("tasks")
     .select()
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .order("id", { ascending: false });
 
   if (error) throw error;
 
@@ -17,10 +18,12 @@ export const fetchTodo = async (
 
 export const createTodo = async (
   supabase: SupabaseClient,
-  userId: string
+  userId: string,
+  status: string
 ): Promise<Tasks> => {
   const taskPayload = {
     name: "New Task",
+    status: status,
     user_id: userId,
   };
 
@@ -42,6 +45,22 @@ export const updateToDoStatus = async (
   const { data, error } = await supabase
     .from("tasks")
     .update({ status: status })
+    .eq("id", projectId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
+export const updateToDoName = async (
+  supabase: SupabaseClient,
+  projectId: string,
+  name: string
+) => {
+  const { data, error } = await supabase
+    .from("tasks")
+    .update({ name: name })
     .eq("id", projectId)
     .select()
     .single();

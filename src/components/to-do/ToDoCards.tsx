@@ -7,7 +7,7 @@ type TodoCardProp = {
 
 const ToDoCards = ({ tasks }: TodoCardProp) => {
   return (
-    <Card className="bg-background/20">
+    <Card>
       <CardHeader>
         <CardTitle>{tasks.name}</CardTitle>
       </CardHeader>

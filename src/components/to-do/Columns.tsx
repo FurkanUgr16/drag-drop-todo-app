@@ -12,16 +12,16 @@ type ColumnProps = {
 
 const Columns = ({ column, tasks, addTodo }: ColumnProps) => {
   return (
-    <div className="flex w-80 flex-col rounded-xl bg-background/20 p-4 border h-full max-h-screen">
+    <div className="flex h-full w-80 min-w-[20rem] flex-col rounded-xl bg-background/20 border border-border p-2">
       <h1 className=" p-4 font-semibold text-lg">{column.label}</h1>
       <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
         {tasks.map((task) => (
-          <>
-            <ToDoCards key={task.id} tasks={task} />
-          </>
+          <div key={task.id}>
+            <ToDoCards tasks={task} />
+          </div>
         ))}
       </div>
-      <div className="mt-4">
+      <div className="p-4 mt-auto">
         <Button className="w-full" onClick={addTodo} variant={"ghost"}>
           <div className="flex items-center space-x-2">
             <Plus size={16} />

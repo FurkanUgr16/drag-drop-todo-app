@@ -6,7 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <TanstackProvider>
       <SidebarProvider>
-        <div className="flex h-screen w-full overflow-hidden bg-background">
+        <div className="relative flex h-screen w-full overflow-hidden bg-background">
           <AppSidebar />
           <SidebarTrigger />
           <main className="flex flex-1 flex-col w-full h-full p-4 overflow-hidden relative">
