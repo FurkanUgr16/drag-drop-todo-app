@@ -1,4 +1,6 @@
+"use client";
 import { Column as ColumnTyPe, Tasks } from "@/types/type";
+import { useDroppable } from "@dnd-kit/core";
 
 import ToDoCards from "./ToDoCards";
 import { Button } from "../ui/button";
@@ -11,10 +13,14 @@ type ColumnProps = {
 };
 
 const Columns = ({ column, tasks, addTodo }: ColumnProps) => {
+  const { setNodeRef } = useDroppable({ id: column.id });
   return (
-    <div className="flex h-full w-80 min-w-[20rem] flex-col rounded-xl bg-background/20 border border-border p-2">
+    <div
+      ref={setNodeRef}
+      className="flex h-full w-80 min-w-[20rem] flex-col rounded-xl bg-background/20 border border-border p-2"
+    >
       <h1 className=" p-4 font-semibold text-lg">{column.label}</h1>
-      <div className="flex flex-1 flex-col gap-4 overflow-y-auto">
+      <div className="flex flex-1 flex-col p-4 gap-4 overflow-y-auto">
         {tasks.map((task) => (
           <div key={task.id}>
             <ToDoCards tasks={task} />
