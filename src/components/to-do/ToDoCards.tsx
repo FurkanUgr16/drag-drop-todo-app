@@ -2,7 +2,7 @@
 import { Card, CardTitle, CardHeader } from "../ui/card";
 import { Tasks } from "@/types/type";
 import { useDraggable } from "@dnd-kit/core";
-import ToDoDropdown from "./ToDoDropdown";
+
 type TodoCardProp = {
   tasks: Tasks;
 };
